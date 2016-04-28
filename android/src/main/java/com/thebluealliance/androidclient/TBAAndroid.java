@@ -7,6 +7,7 @@ import com.thebluealliance.androidclient.datafeed.DatafeedModule;
 import com.thebluealliance.androidclient.datafeed.HttpModule;
 import com.thebluealliance.androidclient.datafeed.gce.GceModule;
 import com.thebluealliance.androidclient.datafeed.status.TBAStatusController;
+import com.thebluealliance.androidclient.di.GamedayChatModule;
 import com.thebluealliance.androidclient.di.TBAAndroidModule;
 import com.thebluealliance.androidclient.di.components.ApplicationComponent;
 import com.thebluealliance.androidclient.di.components.DaggerApplicationComponent;
@@ -28,6 +29,7 @@ public class TBAAndroid extends MultiDexApplication {
     private DatafeedModule mDatafeedModule;
     private BinderModule mBinderModule;
     private DatabaseWriterModule mDatabaseWriterModule;
+    private GamedayChatModule mGamedayChatModule;
     private boolean mShouldBindStetho;
 
     private HttpModule mHttpModule;
@@ -106,6 +108,13 @@ public class TBAAndroid extends MultiDexApplication {
             mDatabaseWriterModule = new DatabaseWriterModule();
         }
         return mDatabaseWriterModule;
+    }
+
+    public GamedayChatModule getGamedayChatModule() {
+        if (mGamedayChatModule == null) {
+            mGamedayChatModule = new GamedayChatModule();
+        }
+        return mGamedayChatModule;
     }
 
     public ApplicationComponent getComponent() {

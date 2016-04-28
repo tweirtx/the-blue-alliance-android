@@ -5,7 +5,7 @@ import android.util.Log;
 
 import rx.Subscriber;
 
-public class ChatListener extends Subscriber<String> {
+public class TwitchChatListener extends Subscriber<String> {
     @Override
     public void onCompleted() {
 

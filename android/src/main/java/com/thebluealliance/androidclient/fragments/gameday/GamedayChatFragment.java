@@ -8,15 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.sorcix.sirc.Channel;
 import com.thebluealliance.androidclient.Constants;
 import com.thebluealliance.androidclient.R;
+import com.thebluealliance.androidclient.TBAAndroid;
 import com.thebluealliance.androidclient.Utilities;
-import com.thebluealliance.twitch.ChatListener;
+import com.thebluealliance.androidclient.di.components.DaggerGamedayChatComponent;
+import com.thebluealliance.androidclient.di.components.GamedayChatComponent;
+import com.thebluealliance.twitch.TwitchChatListener;
 import com.thebluealliance.twitch.OAuthController;
 import com.thebluealliance.twitch.RxTwitchChat;
 import com.thebluealliance.twitch.TwitchChatController;
@@ -26,14 +28,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class GamedayChatFragment extends Fragment {
 
+    @Inject TwitchChatController mChatController;
+    @Inject RxTwitchChat mRxChat;
+    @Inject TwitchChatListener mChatListener;
+
     private OAuthController mOauthController;
-    private TwitchChatController mChatController;
     private Channel mChannel;
 
     public static GamedayChatFragment newInstance() {
@@ -43,12 +50,12 @@ public class GamedayChatFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String clientId = Utilities.readLocalProperty(getActivity(), "twitch.cliendId");
+        getComponent().inject(this);
+        String clientId = Utilities.readLocalProperty(getActivity(), "twitch.clientId");
         String clientSecret = Utilities.readLocalProperty(getActivity(), "twitch.secret");
         String redirect = "http://localhost";
         List<String> scopes = new ArrayList<>();
         scopes.add("chat_login");
-        mChatController = new TwitchChatController();
         mOauthController = OAuthController.newInstance(
                 getActivity().getApplicationContext(),
                 getActivity().getFragmentManager(),
@@ -72,14 +79,13 @@ public class GamedayChatFragment extends Fragment {
                     try {
                         String token = credentialOAuthFuture.getResult().getAccessToken();
                         Log.d(Constants.LOG_TAG, "Got twitch token: " + token);
-                        RxTwitchChat rxTwitchChat = new RxTwitchChat();
 
                         //TODO don't hardcode username
-                        mChannel = mChatController.connectToGameday("plnyyanks", token, rxTwitchChat);
-                        rxTwitchChat.getObservable()
+                        mChannel = mChatController.connectToGameday("plnyyanks", token, mRxChat);
+                        mRxChat.getObservable()
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new ChatListener());
+                                .subscribe(mChatListener);
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -117,5 +123,11 @@ public class GamedayChatFragment extends Fragment {
         // You'll have to read it in from a textbox at the top here, or something
         // I don't think we can get it back from the oauth flow
         return mOauthController.authorizeImplicitly("plnyyanks");
+    }
+
+    private GamedayChatComponent getComponent() {
+        return DaggerGamedayChatComponent.builder()
+                .gamedayChatModule(((TBAAndroid)getActivity().getApplication()).getGamedayChatModule())
+                .build();
     }
 }
