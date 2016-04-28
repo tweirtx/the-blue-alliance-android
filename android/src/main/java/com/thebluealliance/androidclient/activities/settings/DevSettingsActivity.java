@@ -1,5 +1,7 @@
 package com.thebluealliance.androidclient.activities.settings;
 
+import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import com.thebluealliance.androidclient.Analytics;
@@ -11,8 +13,11 @@ import com.thebluealliance.androidclient.database.Database;
 import com.thebluealliance.androidclient.datafeed.status.StatusRefreshService;
 import com.thebluealliance.androidclient.models.Favorite;
 import com.thebluealliance.androidclient.types.ModelType;
+import com.thebluealliance.twitch.OAuthController;
+import com.wuman.android.auth.OAuthManager;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -20,6 +25,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DevSettingsActivity extends AppCompatActivity {
     @Override

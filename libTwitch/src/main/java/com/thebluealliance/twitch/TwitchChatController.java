@@ -16,9 +16,11 @@ import java.io.IOException;
  */
 public class TwitchChatController {
 
-    public static final String TWITCH_IRC_SERVER = "irc.chat.twitch.tv";
+    public static final String TWITCH_IRC_SERVER = "irc.twitch.tv";
     public static final String GAMEDAY_IRC_CHANNEL = "#tbagameday";
     public static final int TWITCH_IRC_PORT = 6667;
+
+    private IrcConnection mConnection;
 
     /**
      * Connects to IRC
@@ -27,12 +29,15 @@ public class TwitchChatController {
      * @param listener Listener to receive incoming messages
      */
     public @Nullable  Channel connectToGameday(String username, String oauthToken, MessageListener listener) {
-        IrcConnection connection = new IrcConnection(TWITCH_IRC_SERVER, TWITCH_IRC_PORT, oauthToken);
-        connection.setNick(username);
-        connection.addMessageListener(listener);
+        if (mConnection == null) {
+            String password = "oauth:" + oauthToken;
+            mConnection = new IrcConnection(TWITCH_IRC_SERVER, TWITCH_IRC_PORT, password);
+            mConnection.setNick(username);
+            mConnection.addMessageListener(listener);
+        }
 
         try {
-            connection.connect();
+            mConnection.connect();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -44,9 +49,15 @@ public class TwitchChatController {
             return null;
         }
 
-        Channel channel = connection.createChannel(GAMEDAY_IRC_CHANNEL);
+        Channel channel = mConnection.createChannel(GAMEDAY_IRC_CHANNEL);
 
         channel.join();
         return channel;
+    }
+
+    public void disconnect() {
+        if (mConnection != null) {
+            mConnection.disconnect();
+        }
     }
 }

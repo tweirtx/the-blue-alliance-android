@@ -4,14 +4,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.thebluealliance.androidclient.fragments.gameday.GamedayChatFragment;
 import com.thebluealliance.androidclient.fragments.gameday.GamedayTickerFragment;
 import com.thebluealliance.androidclient.fragments.gameday.GamedayWebcastsFragment;
 
 public class GamedayFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    public final String[] TITLES = {"Live Ticker", "Webcasts"};
+    public final String[] TITLES = {"Live Ticker", "Webcasts", "Chat"};
     public static final int TAB_TICKER = 0,
-            TAB_WEBCASTS = 1;
+            TAB_WEBCASTS = 1,
+            TAB_CHAT = 2;
 
     public GamedayFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -39,6 +41,10 @@ public class GamedayFragmentPagerAdapter extends FragmentPagerAdapter {
                 break;
             case TAB_WEBCASTS:
                 fragment = GamedayWebcastsFragment.newInstance();
+                fragment.setRetainInstance(true);
+                break;
+            case TAB_CHAT:
+                fragment = GamedayChatFragment.newInstance();
                 fragment.setRetainInstance(true);
                 break;
         }

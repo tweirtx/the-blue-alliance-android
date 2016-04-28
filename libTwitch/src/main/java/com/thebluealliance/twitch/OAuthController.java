@@ -1,8 +1,9 @@
 package com.thebluealliance.twitch;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.api.client.auth.oauth2.BearerToken;
@@ -27,7 +28,7 @@ import java.util.List;
 
 /**
  * A class to handle getting oauth tokens
- * From: https://github.com/wuman/android-oauth-client/blob/master/samples/src/main/java/com/wuman/oauth/samples/OAuth.java
+ * Based on: https://github.com/wuman/android-oauth-client/blob/master/samples/src/main/java/com/wuman/oauth/samples/OAuth.java
  */
 public class OAuthController {
     public static final String KEY_AUTH_MODE = "auth_mode";
@@ -37,6 +38,7 @@ public class OAuthController {
     public static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
 
     private final OAuthManager manager;
+    private final AuthorizationFlow flow;
 
     public static OAuthController newInstance(Context context,
                                     FragmentManager fragmentManager,
@@ -112,6 +114,16 @@ public class OAuthController {
         Preconditions.checkNotNull(flow);
         Preconditions.checkNotNull(controller);
         this.manager = new OAuthManager(flow, controller);
+        this.flow = flow;
+    }
+
+    public @Nullable  Credential getLocalCredential(String userId) {
+        try {
+            return flow.loadCredential(userId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public OAuthFuture<Boolean> deleteCredential(String userId) {

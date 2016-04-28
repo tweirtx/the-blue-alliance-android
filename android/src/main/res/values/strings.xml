@@ -169,4 +169,5 @@
     <string name="playoff_advancement_semi">This alliance made it to the Semifinals</string>
     <string name="playoff_advancement_final">This alliance made it to the Finals</string>
     <string name="playoff_advancement_winner">This alliance won the event</string>
+    <string name="login_to_twitch">Login to Twitch</string>
 </resources>
