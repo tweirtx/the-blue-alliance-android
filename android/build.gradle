@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'gitsemver'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.facebook.testing.screenshot'
 apply plugin: 'com.noveogroup.android.check'
@@ -21,7 +20,8 @@ retrolambda {
     jvmArgs '-noverify'
 }
 
-version semverVersion()
+//version semverVersion()
+version "4.3.1"
 def (major, minor, patch, versionNum, gitTag, gitHash, commitsFromTag, repoDirty) =
 buildVersionCode()
 
@@ -138,8 +138,8 @@ android {
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
             def apkName = "tba-android-";
-            apkName += "v" + version.tagName;
-            apkName += "-" + variant.buildType.name + ".apk";
+            apkName += "v4.3.1"; //version.tagName;
+            apkName += "-debug.apk";
             output.outputFile = file("$project.buildDir/apk/" + apkName)
         }
     }

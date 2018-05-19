@@ -42,7 +42,7 @@ ext {
 
         def versionCode = (major * 1000000) + (minor * 10000) + (patch * 100) + candidate;
 
-        [major, minor, patch, versionCode, version.tagName, version.gitHash,
-         version.commitCountFromTag, version.dirty]
+        [major, minor, patch, versionCode, "v4.3.1", "5c94e11", //version.tagName, version.gitHash,
+         0, true] //version.commitCountFromTag, version.dirty]
     }
 }

@@ -27,20 +27,23 @@ RUN cd /opt && \
     rm gradle*.zip
 
 ENV ANDROID_HOME /usr/local/android-sdk
-ENV ANDROID_SDK_VERSION 24.4.1
+ENV SDK_TOOLS_VERSION 3859397
 ENV ANDROID_VERSION 24
-ENV BUILD_TOOLS_VERSION 25.2.3
+ENV BUILD_TOOLS_VERSION 25.0.2
 
 # Install Android SDK
-RUN wget -q https://dl.google.com/android/android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz
-RUN tar -xvzf android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz
-RUN mv android-sdk-linux $ANDROID_HOME
-RUN rm android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz
-
-ENV ANDROID_COMPONENTS platform-tools,android-$ANDROID_VERSION,build-tools-$BUILD_TOOLS_VERSION
+RUN wget -q https://dl.google.com/android/repository/sdk-tools-linux-${SDK_TOOLS_VERSION}.zip
+RUN unzip -q -d $ANDROID_HOME sdk-tools-linux-${SDK_TOOLS_VERSION}.zip
+RUN rm sdk-tools-linux-${SDK_TOOLS_VERSION}.zip
 
 # Install Android tools
-RUN echo y | $ANDROID_HOME/tools/android update sdk --filter "${ANDROID_COMPONENTS}" --no-ui -a
+RUN yes | $ANDROID_HOME/tools/bin/sdkmanager "platform-tools"
+RUN yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;${BUILD_TOOLS_VERSION}"
+RUN yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-${ANDROID_VERSION}"
+
+# Set up local environment variables
+RUN echo "export ANDROID_HOME=$ANDROID_HOME" >> /root/.bashrc
+RUN echo "export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools" >> /root/.bashrc
 
 # Configure ssh server
 RUN mkdir /var/run/sshd
