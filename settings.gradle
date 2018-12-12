@@ -1,2 +1,1 @@
-include ':libTba', ':libImgur'
-include 'android'
+include ':app'
